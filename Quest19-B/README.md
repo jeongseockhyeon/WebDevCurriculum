@@ -1,30 +1,74 @@
 # Quest 19-B. 서버 아키텍쳐 패턴
 
 ## Introduction
-* 이번 퀘스트에서는 현대적인 서버 아키텍쳐 패턴에 대해 익혀 보도록 하겠습니다.
+
+- 이번 퀘스트에서는 현대적인 서버 아키텍쳐 패턴에 대해 익혀 보도록 하겠습니다.
 
 ## Topics
-* Microservice Architecture
-* Serverless Architecture
-* AWS Lambda
-* Service Mesh
+
+- Microservice Architecture
+- Serverless Architecture
+- AWS Lambda
+- Service Mesh
 
 ## Resources
-* [Jeff Bezos의 이메일](https://news.hada.io/topic?id=638)
-* [마이크로서비스란?](https://www.redhat.com/ko/topics/microservices/what-are-microservices)
-* [AWS Lambda](https://docs.aws.amazon.com/ko_kr/lambda/latest/dg/welcome.html)
-* [AWS API Gateway](https://docs.aws.amazon.com/ko_kr/apigateway/latest/developerguide/welcome.html)
+
+- [Jeff Bezos의 이메일](https://news.hada.io/topic?id=638)
+- [마이크로서비스란?](https://www.redhat.com/ko/topics/microservices/what-are-microservices)
+- [AWS Lambda](https://docs.aws.amazon.com/ko_kr/lambda/latest/dg/welcome.html)
+- [AWS API Gateway](https://docs.aws.amazon.com/ko_kr/apigateway/latest/developerguide/welcome.html)
 
 ## Checklist
-* 마이크로서비스 아키텍쳐란 무엇일까요? 어떤 식으로 서비스를 구성할 수 있을까요? 어떤 장점을 가지고 있을까요?
-* 서버리스 아키텍쳐란 무엇일까요? 어떤 식으로 서비스를 구성할 수 있을까요? 어떤 장점을 가지고 있을까요?
-* AWS Lambda는 어떤 서비스일까요? 이러한 서비스는 어떤 특징을 가지고, 어디에 쓰일 수 있을까요?
-* API Gateway는 어떤 서비스인가요? 어떤 설정을 할 수 있을까요?
-* 많은 마이크로서비스들을 복잡하게 연결할 경우 관리상에 어떤 난점이 생길 수 있을까요? 서비스 메쉬는 무엇이고 이러한 난점을 어떻게 해결하려는 시도일까요?
+
+- 마이크로서비스 아키텍쳐란 무엇일까요? 어떤 식으로 서비스를 구성할 수 있을까요? 어떤 장점을 가지고 있을까요?
+
+  > 마이크로서비스 아키텍쳐란 프로그램은 각각 독집적이고 느슨한 관계의 MicroService들이 모여 하나의 체계를 이룬 개념으로 보는 설계 방법론이다.
+  > 즉 application 하나가 부모입장에서 종속된 모든 service를 제공하는 방식이 아닌, 독립적인 microservices들이 모여 하나의 체계를 이룬 개념으로 보는 것이다.
+  > 이때 microservices들은 독립적으로 배포할 수 있으며, 하나의 프로그램에 통합하는 build 과정을 거치지 않고도 기존 service들을 update할 수 있다
+
+  > 3가지의 장점을 갖고있다.
+  > 변경점을 적용해 할 부분만 반영하면 되기 때문에 유지보수가 더 수월하다.
+  > 체계적으로 시스템 및 파일관리가 가능하다
+  > 유지관리가 더 잘되기 때문에, 서비스의 신뢰도가 더 좋다.
+
+- 서버리스 아키텍쳐란 무엇일까요? 어떤 식으로 서비스를 구성할 수 있을까요? 어떤 장점을 가지고 있을까요?
+
+> 서버리스 아키텍쳐란 서버를 따로 구축하거나 관리할 필요없이 application과 service 운영에만 집중할 수 있는 설계 형태를 일컫는다.
+
+> BaaS:Backend as a Service
+> DB 및 Social service 등 백엔드 관련(데이터 저장 및 추출 등) 기능(API)을 제공하여, 별도의 server 개발을 하지 않고도 백엔드 구축을 할 수 있다.
+> 이러한 서비스들은 정적인 용량에 대한 비용 지불이 아닌, 유동적인 사용량에 근거하여 비용을 지불한다.
+> 가장 대표적인 플랫폼으로 Firebase가 있다.
+
+> BaaS의 장점:백엔드 시스템이 이미 구축되어 있는 상태라면 별도의 서버구축 비용이 들지 않고 사용비용만 지불하면 된다.
+> 일정 용량까지는 무료이므로 연습용/학습용으로 좋다
+
+> BaaS의 단점:백엔드 작업을 Client side에서 진행하는 형태이어서, 사용자가 직접 벡엔드(데이터)처리를 해야하는 경우가 생겨 불편해질 수 있다.특히 백엔드단에서의 변화가 이루어진다면, 이를 사용하는 모든 로직을 수정해야 하는 번거로움이 생긴다.
+
+> FaaS:Function as a Service
+> 프로젝트를 여러 개의 함수로 쪼개서 분산된 컴퓨팅 환경(가상환경)에 등록한 후, 이 함수들이 실행하는 만큼 비용을 내는 플랫폼을 일컫는다. 말 그대로 하나의 기능을 제공한다는 개념이다.
+> 기능이란 우리가 클라우드 컴퓨팅 환경에 등록한 함수를 의미한다.
+> FaaS는 클라우드 환경에 사용자가 등록한 함수에 대한 API를 제공하고, 해당 함수가 실행될 때마다 비용을 지불하는 형태로 진행된다.
+
+> FaaS의 장점:따로 서버를 구축하지 않아도 된다는 점에서 BaaS와 유사하다. 단 BaaS는 저장소나 플랫폼을 제공, FaaS는 함수를 제공
+
+> FaaS의 단점:처리시간에 한계가 있어, 웹소켓같이(특히 게임에서 지속적인 데이터 누적이 일어나는 환경) 지속적인 데이터 전송이 이루어지는 곳에서는 적합하지 않다
+> FaaS 업체에서 제공하는 함수를 사용하다보니, local system을 이용할 수 없다는 단점이 발생한다.
+> 이 경우 업체에서 제공하는 DB나 해당 system을 사용해야 할 것이고, 그만큼 추가적인 비용지불이 발생하게 된다.
+
+- AWS Lambda는 어떤 서비스일까요? 이러한 서비스는 어떤 특징을 가지고, 어디에 쓰일 수 있을까요?
+  > AWS에서 제공하는 FaaS의 일종, 즉 application 및 mobile app의 벡엔드를 별도 구축없이 빠르게 구현할 수 있는 서비스이다.
+- API Gateway는 어떤 서비스인가요? 어떤 설정을 할 수 있을까요?
+  > Microservice의 경계 외부(최후방)에서 오는 API호출을 제어하고, 각 servcies에게 메시지를 보내는 서비스이다.
+- 많은 마이크로서비스들을 복잡하게 연결할 경우 관리상에 어떤 난점이 생길 수 있을까요? 서비스 메쉬는 무엇이고 이러한 난점을 어떻게 해결하려는 시도일까요?
+  > 마이크로서비스들이 복잡하게 연결될 경우 복잡도 증가하여 시스템의 구성 및 운영이 어려워지고 연결이 많아질수록 네트워크 오버헤드가 증가하여 성능 저하의 원인 될 수 있다. 또한 복잡도 증가로 인해 장애 발생시 복구 어려워질 수 있다.
+  > 서비스 메시는 서비스가 애플리케이션 수명 주기 전반에 걸쳐 데이터와 일관성을 공유하며 서로 통신할 수 있도록 지원하는 사전 구성된 애플리케이션 서비스으로 서비스 간의 연결과 통신을 관리하여 마이크로서비스의 이러한 난점들을 해결할 수 있다.
 
 ## Quest
-* 메모장 시스템을 JWT 발급을 위한 마이크로서비스와 실제 비즈니스 로직을 처리하는 마이크로서비스로 나누어 보세요.
-* JWT 토큰 발급의 역할을 하는 마이크로서비스를 AWS Lambda와 API Gateway를 이용하여 구축해 보세요.
+
+- 메모장 시스템을 JWT 발급을 위한 마이크로서비스와 실제 비즈니스 로직을 처리하는 마이크로서비스로 나누어 보세요.
+- JWT 토큰 발급의 역할을 하는 마이크로서비스를 AWS Lambda와 API Gateway를 이용하여 구축해 보세요.
 
 ## Advanced
-* Istio는 어떤 툴일까요? 이 툴을 Kubernetes와 함께 사용하여 어떤 구조를 구현할 수 있을까요?
+
+- Istio는 어떤 툴일까요? 이 툴을 Kubernetes와 함께 사용하여 어떤 구조를 구현할 수 있을까요?
